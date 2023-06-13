@@ -41,14 +41,23 @@ export default function Admin({ schedule }: Schedule) {
     });
 
   //create an array of every date for schedule
+  //switch to Object.keys(appointmentObjects)
   const scheduleDates = appointmentObjects.map((day) => {
     return day.date;
   });
 
+  //maxsignup window configured by length of schedule
+  //subject to change, especially if I want to create a continous mode
+  const maxSignupExpiration = scheduleDates.length * (24 * 60 * 60 * 1000); //milliseconds in one day
+
   const router = useRouter();
   const [displayDate, setDisplayDate] = useState(scheduleDates[0]);
   const [appointments, setAppointments] = useState(appointmentObjects);
-  const [editCount, setEditCount] = useLocalStorage("editCount", 0);
+  const [editCount, setEditCount] = useLocalStorage(
+    "editCount",
+    0,
+    maxSignupExpiration
+  );
   const [editMode, setEditMode] = useState(
     editCount === schedule.max_signups ? false : true
   );
