@@ -44,6 +44,10 @@ export default function Admin({ schedule }: Schedule) {
 
   const [displayDate, setDisplayDate] = useState(scheduleDates[0]);
   const [appointments, setAppointments] = useState(appointmentObjects);
+  const router = useRouter();
+
+  const scheduleId = router?.query?.userId?.[0] ?? "";
+  console.log(scheduleId);
 
   function changeDisplayDate(direction: string) {
     let index = scheduleDates.indexOf(displayDate);
@@ -66,33 +70,48 @@ export default function Admin({ schedule }: Schedule) {
     }
   }
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     let appointmentCopy = [...appointments];
     e.preventDefault();
 
     const info = e.target as HTMLFormElement;
-    console.log(info.userName.value);
+    const fill = info.userName.value === "" ? "BLOCKED" : "";
+    console.log(fill);
     console.log("appointment copy", appointmentCopy);
 
-    if (typeof displayAppointments !== "undefined") {
-      let object = displayAppointments.timeslots.find((obj, index) => {
-        if (obj.time === info.time.value) {
-          displayAppointments!.timeslots[index] = {
-            time: info.time.value,
-            name: info.userName.value,
-            phone: info.phone.value,
-            email: info.email.value,
-          };
-          return true;
-        }
-      });
-    } else {
-      console.log("error");
+    for (const day of appointmentCopy) {
+      if (day.date === displayDate) {
+        let object = day.timeslots.find((obj, index) => {
+          if (obj.time === info.time.value) {
+            day!.timeslots[index] = {
+              time: info.time.value,
+              name: fill,
+              phone: fill,
+              email: fill,
+            };
+            return true;
+          }
+        });
+      }
     }
 
-    console.log("display appointments", displayAppointments);
+    setAppointments(appointmentCopy);
 
-    //now put display appointments into the date spot on the copy of appointments and set state
+    console.log("appointments", appointments);
+
+    const apptJSON = JSON.stringify(appointments);
+    const endpoint = `/api/bookAppointments/${scheduleId}`;
+    const options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: apptJSON,
+    };
+    const response = await fetch(endpoint, options);
+
+    const result = await response.json();
+    console.log(result);
   };
 
   let displayAppointments:
@@ -150,9 +169,17 @@ export default function Admin({ schedule }: Schedule) {
                 readOnly
               />
               {timeslot.name ? (
-                <button type="button">Un-reserve</button>
+                <button
+                  type="submit"
+                  name="unreserve">
+                  Un-reserve
+                </button>
               ) : (
-                <button type="submit">Block off time</button>
+                <button
+                  type="submit"
+                  name="block">
+                  Block off time
+                </button>
               )}
             </form>
           );

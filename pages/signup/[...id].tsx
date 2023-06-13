@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { NextPageContext } from "next";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 enum Requirements {
   both,
@@ -47,10 +48,13 @@ export default function Admin({ schedule }: Schedule) {
   const router = useRouter();
   const [displayDate, setDisplayDate] = useState(scheduleDates[0]);
   const [appointments, setAppointments] = useState(appointmentObjects);
-  const [editCount, setEditCount] = useState(0);
-  const [editMode, setEditMode] = useState(true);
+  const [editCount, setEditCount] = useLocalStorage("editCount", 0);
+  const [editMode, setEditMode] = useState(
+    editCount === schedule.max_signups ? false : true
+  );
 
-  console.log();
+  console.log("editCount", editCount);
+  console.log("editMode", editMode);
 
   const scheduleId = router?.query?.id?.[0] ?? "";
 
@@ -78,12 +82,8 @@ export default function Admin({ schedule }: Schedule) {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     let appointmentCopy = [...appointments];
     e.preventDefault();
-    setEditCount(editCount + 1);
 
-    if (editCount >= schedule.max_signups) {
-      setEditMode(false);
-      console.log("Edit Count:", editCount);
-    }
+    incrementEditCount();
 
     const info = e.target as HTMLFormElement;
     console.log(info.userName.value);
@@ -124,10 +124,21 @@ export default function Admin({ schedule }: Schedule) {
     console.log(result);
   };
 
+  const incrementEditCount = () => {
+    const newEditCount = editCount + 1;
+    setEditCount(newEditCount);
+  };
+
   let displayAppointments:
     | { date: string; timeslots: Appointment[] }
     | undefined = appointments.find((obj) => obj.date === displayDate);
   //this page shaped up more like I want to the non-admin view to see. I can migrate after I get further
+
+  useEffect(() => {
+    if (editCount >= schedule.max_signups) {
+      setEditMode(false);
+    }
+  }, [editCount, schedule.max_signups]);
 
   return (
     <>
@@ -170,13 +181,19 @@ export default function Admin({ schedule }: Schedule) {
                   value={timeslot.time}
                   readOnly
                 />
-                <label htmlFor="userName">Reserved: </label>
-                <input
-                  type="text"
-                  name="userName"
-                  value={timeslot.name}
-                  readOnly
-                />
+                {timeslot.name === "BLOCKED" ? (
+                  <label htmlFor="userName">Not Available</label>
+                ) : (
+                  <label htmlFor="userName">
+                    Reserved:
+                    <input
+                      type="text"
+                      name="userName"
+                      value={timeslot.name}
+                      readOnly
+                    />{" "}
+                  </label>
+                )}
               </form>
             );
           } else {

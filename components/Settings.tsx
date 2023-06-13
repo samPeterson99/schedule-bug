@@ -36,7 +36,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
 
   const { data: session } = useSession();
   const userId: string | undefined = session?.user?.id;
-  console.log("original", schedule);
+
   //schedule is only brought in to set these settings.
   //Settings, not schedule is use below
   const [settings, setSettings] = useState({
@@ -50,7 +50,6 @@ const SettingsComponent = ({ schedule }: Schedule) => {
     requirements: schedule.requirements,
     appointments: schedule.appointments,
   });
-  console.log(settings);
   const router = useRouter();
 
   // if (!session) {
