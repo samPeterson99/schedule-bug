@@ -63,6 +63,8 @@ const SettingsComponent = ({ schedule }: Schedule) => {
   ): void => {
     let key = event.target.name;
     let value = event.target.value;
+    console.log(key);
+    console.log(value);
     setSettings((prevSettings) => ({
       ...prevSettings,
       [key]: value,
@@ -90,7 +92,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
 
   return (
     <main className="flex flex-col items-center">
-      <div className="w-full px-8 mx-auto mt-10 space-y-2 lg:max-w-md">
+      <div className="w-full px-8 mx-auto mt-10 space-y-2">
         <input
           type="checkbox"
           id="accordion"
@@ -98,8 +100,14 @@ const SettingsComponent = ({ schedule }: Schedule) => {
         />
         <label
           htmlFor="accordion"
-          className="flex w-full px-2 border-l-4  items-center group">
+          className="flex justify-between w-full px-2 border-l-4 items-center group">
           Settings
+          <button
+            className="px-4 mr-4 bg-blue-500 rounded formButton"
+            type="button"
+            onClick={() => router.push(`/signup/${userId}`)}>
+            View Schedule Page
+          </button>
         </label>
 
         <div className="hidden peer-checked:block py-4 ">
@@ -248,12 +256,6 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                     className="px-4 mr-4 bg-red-700 rounded formButton"
                     type="reset"
                   />
-                  <button
-                    className="px-4 mr-4 mt-4 bg-blue-500 rounded formButton"
-                    type="button"
-                    onClick={() => router.push(`/signup/${userId}`)}>
-                    View Schedule Page
-                  </button>
                 </div>
               </div>
             </div>

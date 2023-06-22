@@ -151,109 +151,164 @@ export default function Admin({ schedule }: Schedule) {
 
   return (
     <>
-      <main className="flex flex-col items-center bg-slate-400 w-full">
-        {scheduleDates.length > 1 && (
-          <button onClick={() => changeDisplayDate("down")}>&larr;</button>
-        )}
-        <h1>{new Date(displayDate).toLocaleDateString()}</h1>
-        {scheduleDates.length > 1 && (
-          <button onClick={() => changeDisplayDate("up")}> &rarr;</button>
-        )}
-        {scheduleDates.length === 2 && <h3>One more day available</h3>}
-        {scheduleDates.length > 2 && (
-          <h3>{scheduleDates.length - 1} more days available</h3>
-        )}
-        {displayAppointments?.timeslots.map((timeslot, index) => {
-          if (timeslot.name && schedule.private) {
-            return (
-              <div
-                className="flex w-full flex-row"
-                key={index}>
-                <input
-                  type="time"
-                  name="time"
-                  value={timeslot.time}
-                  readOnly
-                />
-                <label htmlFor="userName">Reserved</label>
+      <main className="flex flex-col bg-slate-100 w-full">
+        <div className="flex flex-row m-auto">
+          {scheduleDates.length > 1 && (
+            <button
+              className="w-8"
+              onClick={() => changeDisplayDate("down")}>
+              &larr;
+            </button>
+          )}
+          <h1 className="px-2">{new Date(displayDate).toLocaleDateString()}</h1>
+          {scheduleDates.length > 1 && (
+            <button
+              className="w-8"
+              onClick={() => changeDisplayDate("up")}>
+              &rarr;
+            </button>
+          )}
+        </div>
+        <div className="m-auto p-2">
+          {scheduleDates.length === 2 && <h3>One more day available</h3>}
+          {scheduleDates.length > 2 && (
+            <h3>{scheduleDates.length - 1} more days available</h3>
+          )}
+        </div>
+        <div className="overflow-x-auto m-auto">
+          <section className="min-w-max table">
+            <div className="table-header-group">
+              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
+                Time
               </div>
-            );
-          } else if (timeslot.name && !schedule.private) {
-            return (
-              <form
-                onSubmit={onSubmit}
-                className="flex flex-row w-full"
-                key={index}>
-                <input
-                  type="time"
-                  name="time"
-                  value={timeslot.time}
-                  readOnly
-                />
-                {timeslot.name === "BLOCKED" ? (
-                  <label htmlFor="userName">Not Available</label>
-                ) : (
-                  <label htmlFor="userName">
-                    Reserved:
-                    <input
-                      type="text"
-                      name="userName"
-                      value={timeslot.name}
-                      readOnly
-                    />{" "}
-                  </label>
-                )}
-              </form>
-            );
-          } else {
-            return (
-              <form
-                onSubmit={onSubmit}
-                className="flex flex-row"
-                key={index}>
-                <input
-                  type="time"
-                  name="time"
-                  value={timeslot.time}
-                  readOnly
-                />
-                <label htmlFor="userName">Name: </label>
-                <input
-                  type="text"
-                  name="userName"
-                  readOnly={!editMode}
-                  required
-                />
-                <label htmlFor="phone">Phone #: </label>
-                <input
-                  type="tel"
-                  className="w-20"
-                  name="phone"
-                  readOnly={!editMode}
-                  required={
-                    schedule.requirements === Requirements.both ||
-                    schedule.requirements === Requirements.phone
-                  }
-                />
-                <label htmlFor="email">Email: </label>
-                <input
-                  type="email"
-                  name="email"
-                  readOnly={!editMode}
-                  required={
-                    schedule.requirements === Requirements.both ||
-                    schedule.requirements === Requirements.email
-                  }
-                />
-                <button
-                  type="submit"
-                  disabled={!editMode}>
-                  Book It!
-                </button>
-              </form>
-            );
-          }
-        })}
+              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
+                Name
+              </div>
+              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
+                Phone
+              </div>
+              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
+                Email
+              </div>
+              <div className="table-cell py-2 px-4 w-24  border-b-2"></div>
+            </div>
+            <div className="table-row-group">
+              {displayAppointments?.timeslots.map((timeslot, index) => {
+                if (timeslot.name && schedule.private) {
+                  return (
+                    <div
+                      className="table-row"
+                      key={index}>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2">
+                        <input
+                          type="time"
+                          name="time"
+                          value={timeslot.time}
+                          readOnly
+                        />
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
+                        Reserved
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
+                        -
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center"></div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
+                        -
+                      </div>
+                    </div>
+                  );
+                } else if (timeslot.name && !schedule.private) {
+                  return (
+                    <div
+                      className="table-row"
+                      key={index}>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2">
+                        <input
+                          type="time"
+                          name="time"
+                          value={timeslot.time}
+                          readOnly
+                        />
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2">
+                        {timeslot.name === "BLOCKED" ? (
+                          <div>Not Available</div>
+                        ) : (
+                          <div>Reserved: {timeslot.name}</div>
+                        )}
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
+                        -
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
+                        -
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 text-center">
+                        -
+                      </div>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <form
+                      className="table-row"
+                      onSubmit={onSubmit}
+                      key={index}>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2">
+                        <input
+                          type="time"
+                          name="time"
+                          value={timeslot.time}
+                          readOnly
+                        />
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2">
+                        <input
+                          type="text"
+                          name="userName"
+                          readOnly={!editMode}
+                          required
+                        />
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2">
+                        <input
+                          type="tel"
+                          name="phone"
+                          readOnly={!editMode}
+                          required={
+                            schedule.requirements === Requirements.both ||
+                            schedule.requirements === Requirements.phone
+                          }
+                        />
+                      </div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2">
+                        <input
+                          type="email"
+                          name="email"
+                          readOnly={!editMode}
+                          required={
+                            schedule.requirements === Requirements.both ||
+                            schedule.requirements === Requirements.email
+                          }
+                        />
+                      </div>
+                      <div>
+                        <button
+                          className="table-cell py-2 px-4 w-40"
+                          type="submit"
+                          disabled={!editMode}>
+                          Book It!
+                        </button>
+                      </div>
+                    </form>
+                  );
+                }
+              })}
+            </div>
+          </section>
+        </div>
       </main>
     </>
   );

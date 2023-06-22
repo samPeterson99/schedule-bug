@@ -13,3 +13,9 @@
   color: whitesmoke;
   height: 40px;
 }
+
+.signupCell {
+  padding: 0.5rem 1rem;
+  width: 10rem;
+  border-right-width: 2px;
+}
