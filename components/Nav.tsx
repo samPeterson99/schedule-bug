@@ -6,10 +6,13 @@ export default function Nav() {
   const { data: session } = useSession();
 
   return (
-    <header className="max-w-full container">
+    <header className="max-w-full fixed container">
       <div className="flex justify-between p-2 items-center">
-        <h4 className="font-bold flex-none">Schedule Bug</h4>
-        <BugAntIcon className="h-8" />
+        <h4 className="font-bold flex-none -mr-10">Schedule Bug</h4>
+        <Link href={session ? `/admin/${session.user.id}` : "/"}>
+          <BugAntIcon className="h-8" />
+        </Link>
+
         {session && session.user ? (
           <button
             className="flex-none p-2 rounded-2xl bg-black hover:bg-white hover:text-black"

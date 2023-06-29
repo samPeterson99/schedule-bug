@@ -35,8 +35,9 @@ const SettingsComponent = ({ schedule }: Schedule) => {
   let todayString = todayDate.toISOString().substring(0, 10);
 
   const { data: session } = useSession();
+  const [showModal, setShowModal] = useState(false);
   const userId: string | undefined = session?.user?.id;
-
+  console.log(schedule.increments);
   //schedule is only brought in to set these settings.
   //Settings, not schedule is use below
   const [settings, setSettings] = useState({
@@ -51,6 +52,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
     appointments: schedule.appointments,
   });
   const router = useRouter();
+  console.log(settings);
 
   // if (!session) {
   //   router.push("/");
@@ -92,7 +94,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
 
   return (
     <main className="flex flex-col items-center">
-      <div className="w-full px-8 mx-auto mt-10 space-y-2">
+      <div className="w-screen px-10 mt-12 space-y-2">
         <input
           type="checkbox"
           id="accordion"
@@ -103,20 +105,20 @@ const SettingsComponent = ({ schedule }: Schedule) => {
           className="flex justify-between w-full px-2 border-l-4 items-center group">
           Settings
           <button
-            className="px-4 mr-4 bg-blue-500 rounded formButton"
+            className="px-4 bg-blue-500 rounded formButton"
             type="button"
             onClick={() => router.push(`/signup/${userId}`)}>
             View Schedule Page
           </button>
         </label>
 
-        <div className="hidden peer-checked:block py-4 ">
+        <div className="hidden w-screen peer-checked:block py-4 ">
           <form
-            className="w-full max-w-lg "
+            className="w-screen max-w-lg "
             onSubmit={onSubmit}
             action="">
-            <div className="flex flex-col flex-wrap -mx-3 mb-6">
-              <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <div className="flex flex-row mr-6 -ml-3 mb-6">
+              <div className="flex flex-col w-full px-3 mb-6 md:mb-0">
                 <label
                   className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                   htmlFor="start_date">
@@ -132,7 +134,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                 />
 
                 <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                  className="mt-2 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                   htmlFor="end_date">
                   End date of schedule
                 </label>
@@ -146,7 +148,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                 />
 
                 <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                  className="mt-2 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                   htmlFor="start_time">
                   Start time/Daily Start Time
                 </label>
@@ -160,7 +162,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                 />
 
                 <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                  className="mt-2 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                   htmlFor="end_time">
                   End time/ Daily end time
                 </label>
@@ -174,7 +176,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                 />
 
                 <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                  className="mt-2 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                   htmlFor="increments">
                   Choose time increments
                 </label>
@@ -188,6 +190,8 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                   <option value="30m">Thirty minutes</option>
                   <option value="1h">One hour</option>
                 </select>
+              </div>
+              <div className="flex flex-col w-full px-3 mb-6 md:mb-0">
                 <label
                   className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                   htmlFor="max_signups">
@@ -203,11 +207,9 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                   max={10}
                 />
                 <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                  className="mt-2 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                   htmlFor="private">
-                  Should your schedule be public or private? Anyone can see
-                  names and appointments in public mode. In private, they will
-                  just be blocked out.
+                  Should your schedule be public or private?
                 </label>
                 <select
                   className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-auto py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
@@ -219,7 +221,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                   <option value="false">Public</option>
                 </select>
                 <label
-                  className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                  className="mt-2 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                   htmlFor="requirements">
                   Are users required to provide a phone number or email address?
                 </label>
@@ -246,17 +248,46 @@ const SettingsComponent = ({ schedule }: Schedule) => {
                 /> */}
 
                 {/* need modals for each below */}
-                <div>
+                <div className="flex flex-row mt-2">
                   <button
-                    className="px-4 mr-4 mt-4 bg-green-700 rounded formButton"
-                    type="submit">
+                    className="px-2 text-sm bg-green-700 rounded formButton"
+                    type="button"
+                    onClick={() => setShowModal(true)}>
                     Generate Schedule
                   </button>
                   <input
-                    className="px-4 mr-4 bg-red-700 rounded formButton"
+                    className=" px-4 bg-red-700 rounded formButton"
                     type="reset"
                   />
                 </div>
+                {showModal && (
+                  <div className="h-full w-full z-50">
+                    <div className="flex h-fit w-1/2 bg-white border-blue-500 border-4 overflow-x-hidden fixed inset-0 m-auto outline-none">
+                      <div className="relative mx-auto w-full">
+                        <div className="border-0 flex flex-col w-full outline-none">
+                          <p className="w-76 px-2 py-4 text-center self-center">
+                            <em>Are you sure?</em> Generating a new schedule
+                            will erase the previous schedule. You will not be
+                            able to get that schedule back.
+                          </p>
+                          <div className="flex flex-row w-full items-center border-t border-solid rounded-b">
+                            <button
+                              type="button"
+                              onClick={() => setShowModal(false)}
+                              className=" bg-red-400 w-1/2">
+                              No
+                            </button>
+                            <button
+                              type="submit"
+                              className=" bg-green-500 w-1/2">
+                              Yes
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </form>

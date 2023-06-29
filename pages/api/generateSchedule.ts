@@ -162,7 +162,7 @@ function generateTimeslots(startTime: string, endTime: string, i: string) {
     interval = 60;
   }
 
-  while (currentTime <= endTimeObject) {
+  while (currentTime < endTimeObject) {
     // Add the current time to the intervals array
     timeslots.push({
       time: formatTime(currentTime.getHours(), currentTime.getMinutes()),

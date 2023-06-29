@@ -44,35 +44,39 @@ export default function Admin({ schedule }: Schedule) {
 
   const [displayDate, setDisplayDate] = useState(scheduleDates[0]);
   const [appointments, setAppointments] = useState(appointmentObjects);
+  const [showModal, setShowModal] = useState<number | null>(null);
   const router = useRouter();
 
   const scheduleId = router?.query?.userId?.[0] ?? "";
   console.log(scheduleId);
 
   function changeDisplayDate(direction: string) {
-    let index = scheduleDates.indexOf(displayDate);
-    let lastIndex = scheduleDates.length - 1;
-    if (direction === "up") {
-      if (index === lastIndex) {
-        index = 0;
+    if (showModal === null) {
+      let index = scheduleDates.indexOf(displayDate);
+      let lastIndex = scheduleDates.length - 1;
+      if (direction === "up") {
+        if (index === lastIndex) {
+          index = 0;
+        } else {
+          index++;
+        }
+        setDisplayDate(scheduleDates[index]);
       } else {
-        index++;
+        //direction "down"
+        if (index === 0) {
+          index = lastIndex;
+        } else {
+          index--;
+        }
+        setDisplayDate(scheduleDates[index]);
       }
-      setDisplayDate(scheduleDates[index]);
-    } else {
-      //direction "down"
-      if (index === 0) {
-        index = lastIndex;
-      } else {
-        index--;
-      }
-      setDisplayDate(scheduleDates[index]);
     }
   }
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     let appointmentCopy = [...appointments];
     e.preventDefault();
+    setShowModal(null);
 
     const info = e.target as HTMLFormElement;
     const fill = info.userName.value === "" ? "BLOCKED" : "";
@@ -111,6 +115,7 @@ export default function Admin({ schedule }: Schedule) {
     const response = await fetch(endpoint, options);
 
     const result = await response.json();
+
     console.log(result);
   };
 
@@ -122,38 +127,52 @@ export default function Admin({ schedule }: Schedule) {
   return (
     <>
       <SettingsComponent schedule={schedule} />
-      <main className="flex flex-col bg-slate-100 w-full">
-        <section className="flex flex-row m-auto">
-          {scheduleDates.length > 1 && (
-            <button onClick={() => changeDisplayDate("down")}>&larr;</button>
-          )}
-          <h1>{new Date(displayDate).toLocaleDateString()}</h1>
-          {scheduleDates.length > 1 && (
-            <button onClick={() => changeDisplayDate("up")}> &rarr;</button>
-          )}
-        </section>
-        <section className="m-autopx-2">
-          {scheduleDates.length === 2 && <h3>One more day available</h3>}
-          {scheduleDates.length > 2 && (
-            <h3>{scheduleDates.length - 1} more days available</h3>
-          )}
-        </section>
-        <div className="overflow-x-auto m-auto">
-          <section className="min-w-max table">
+      <main className="flex flex-col w-full mt-4">
+        <div className="w-full flex flex-col">
+          <section className="flex flex-row justify-center">
+            {scheduleDates.length > 1 && (
+              <button
+                className="w-8"
+                onClick={() => changeDisplayDate("down")}>
+                &larr;
+              </button>
+            )}
+            <h1 className="px-2">
+              {new Date(displayDate).toLocaleDateString()}
+            </h1>
+            {scheduleDates.length > 1 && (
+              <button
+                className="w-8"
+                onClick={() => changeDisplayDate("up")}>
+                {" "}
+                &rarr;
+              </button>
+            )}
+          </section>
+          <section className="m-auto px-2">
+            {scheduleDates.length === 2 && <h3>One more day available</h3>}
+            {scheduleDates.length > 2 && (
+              <h3>{scheduleDates.length - 1} more days available</h3>
+            )}
+          </section>
+        </div>
+
+        <div className="overflow-x-auto mt-4 mx-auto">
+          <section className="min-w-max min-h-max table border-2">
             <div className="table-header-group">
-              <div className="table-cell py-2 px-4 w-40 border-r-2  border-t-2  border-b-2 text-center">
+              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
                 Time
               </div>
-              <div className="table-cell py-2 px-4 w-40 border-r-2  border-t-2  border-b-2 text-center">
+              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
                 Name
               </div>
-              <div className="table-cell py-2 px-4 w-40 border-r-2  border-t-2  border-b-2 text-center">
+              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
                 Phone
               </div>
-              <div className="table-cell py-2 px-4 w-40 border-r-2  border-t-2  border-b-2 text-center">
+              <div className="table-cell py-2 px-4 w-40 border-r-2 border-b-2 text-center">
                 Email
               </div>
-              <div className="table-cell py-2 px-4 w-24  border-t-2  border-b-2"></div>
+              <div className="table-cell py-2 px-4 w-40 border-b-2"></div>
             </div>
 
             <section className="table-row-group">
@@ -196,21 +215,51 @@ export default function Admin({ schedule }: Schedule) {
                         readOnly
                       />
                     </div>
-                    <div className="table-cell py-2 px-4 w-24">
+
+                    <div className="table-cell py-2 px-4 w-40">
                       {timeslot.name ? (
                         <button
-                          type="submit"
+                          type="button"
+                          onClick={() => setShowModal(index)}
+                          className="text-center w-full"
                           name="unreserve">
                           Un-reserve
                         </button>
                       ) : (
                         <button
                           type="submit"
+                          className="text-center w-full"
                           name="block">
                           Block off time
                         </button>
                       )}
                     </div>
+                    {showModal === index && (
+                      <div className="h-full w-full z-50">
+                        <div className="flex h-fit w-1/2 bg-white border-blue-500 border-4 overflow-x-hidden fixed inset-0 m-auto outline-none">
+                          <div className="relative mx-auto w-full">
+                            <div className="border-0 flex flex-col w-full outline-none">
+                              <p className="w-48 px-2 py-4 text-center self-center">
+                                Are you sure?
+                              </p>
+                              <div className="flex flex-row w-full items-center border-t border-solid rounded-b">
+                                <button
+                                  type="button"
+                                  onClick={() => setShowModal(null)}
+                                  className=" bg-red-400 w-1/2">
+                                  No
+                                </button>
+                                <button
+                                  type="submit"
+                                  className=" bg-green-500 w-1/2">
+                                  Yes
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </form>
                 );
               })}

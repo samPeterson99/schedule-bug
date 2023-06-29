@@ -151,32 +151,37 @@ export default function Admin({ schedule }: Schedule) {
 
   return (
     <>
-      <main className="flex flex-col bg-slate-100 w-full">
-        <div className="flex flex-row m-auto">
-          {scheduleDates.length > 1 && (
-            <button
-              className="w-8"
-              onClick={() => changeDisplayDate("down")}>
-              &larr;
-            </button>
-          )}
-          <h1 className="px-2">{new Date(displayDate).toLocaleDateString()}</h1>
-          {scheduleDates.length > 1 && (
-            <button
-              className="w-8"
-              onClick={() => changeDisplayDate("up")}>
-              &rarr;
-            </button>
-          )}
-        </div>
-        <div className="m-auto p-2">
-          {scheduleDates.length === 2 && <h3>One more day available</h3>}
-          {scheduleDates.length > 2 && (
-            <h3>{scheduleDates.length - 1} more days available</h3>
-          )}
-        </div>
-        <div className="overflow-x-auto m-auto">
-          <section className="min-w-max table">
+      <main className="flex flex-col w-full">
+        <section className="fixed w-full flex mt-16 flex-col">
+          <div className="flex flex-row mx-auto">
+            {scheduleDates.length > 1 && (
+              <button
+                className="w-8"
+                onClick={() => changeDisplayDate("down")}>
+                &larr;
+              </button>
+            )}
+            <h1 className="px-2">
+              {new Date(displayDate).toLocaleDateString()}
+            </h1>
+            {scheduleDates.length > 1 && (
+              <button
+                className="w-8"
+                onClick={() => changeDisplayDate("up")}>
+                &rarr;
+              </button>
+            )}
+          </div>
+          <div className="m-auto p-2">
+            {scheduleDates.length === 2 && <h3>One more day available</h3>}
+            {scheduleDates.length > 2 && (
+              <h3>{scheduleDates.length - 1} more days available</h3>
+            )}
+          </div>
+        </section>
+
+        <div className="overflow-x-auto mt-36 m-auto">
+          <section className="min-w-max table border-2">
             <div className="table-header-group">
               <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
                 Time
@@ -192,7 +197,7 @@ export default function Admin({ schedule }: Schedule) {
               </div>
               <div className="table-cell py-2 px-4 w-24  border-b-2"></div>
             </div>
-            <div className="table-row-group">
+            <div className="table-row-group overflow-auto">
               {displayAppointments?.timeslots.map((timeslot, index) => {
                 if (timeslot.name && schedule.private) {
                   return (
@@ -297,7 +302,7 @@ export default function Admin({ schedule }: Schedule) {
                       <div>
                         <button
                           className="table-cell py-2 px-4 w-40"
-                          type="submit"
+                          type="button"
                           disabled={!editMode}>
                           Book It!
                         </button>
