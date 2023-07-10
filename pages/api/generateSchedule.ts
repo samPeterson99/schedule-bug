@@ -50,13 +50,15 @@ export default async function handler(
         end_date: req.body.end_date,
         start_time: req.body.start_time,
         end_time: req.body.end_time,
-        increment: req.body.increments,
+        increments: req.body.increments,
         max_signups: req.body.max_signups,
         private: req.body.private,
         requirements: req.body.requirements,
         appointments: appointments,
       })
       .select();
+
+    console.log(appointments);
 
     res.status(200).json(data);
     if (error) {
@@ -73,7 +75,7 @@ export default async function handler(
         end_date: req.body.end_date,
         start_time: req.body.start_time,
         end_time: req.body.end_time,
-        increment: req.body.increments,
+        increments: req.body.increments,
         max_signups: req.body.max_signups,
         private: req.body.private,
         requirements: req.body.requirements,

@@ -15,21 +15,49 @@ export default function Home() {
     router.push(`/admin/${userId}`);
   }
   return (
-    <main className="w-full h-full flex flex-col items-center">
-      <h1 className="mt-5">Welcome to Schedule Bug</h1>
-      <p>
-        An easy to use schedule client.{" "}
+    <main className="sm:w-5/6 md:w-1/2 h-full mx-auto flex flex-col items-center">
+      <h1 className="mt-20 text-4xl">Welcome to Schedule Bug</h1>
+      <p>A somewhat easy-to-use scheduling client.</p>
+      <div className="flex flex-row gap-10">
+        <div className="flex flex-col w-1/2">
+          {" "}
+          <h2 className="self-start text-xl mt-4 px-2">How does it work?</h2>
+          <p className="self-start mt-4 px-2">
+            When you sign in, you will have the option to create a schedule.
+            Once you click generate schedule, a sign-up page is generated based
+            on your settings.
+          </p>
+          <p className="self-start mt-4 px-2">
+            This sign-up can be sent to anyone, even if they don&apos;t have an
+            count, and all of the information they have submitted will be
+            available to you on your main screen.{" "}
+          </p>
+        </div>
+        <div className="flex flex-col w-1/2">
+          {" "}
+          <h3 className="self-start text-xl mt-4 px-4">
+            Why did you really make it?
+          </h3>
+          <p className="self-start mt-4 px-4">
+            For me, Schedule Bug was an exercise in creating more complex
+            layouts, forms, and data structures, as well as chance to use
+            PostGreSQL (Supabase)
+          </p>
+        </div>
+      </div>
+
+      <p className="self-center mt-4 text-lg">
+        {" "}
         <a
-          className="underline underline-offset-4"
+          className="underline underline-offset-4 cursor-pointer"
           onClick={() => signIn()}>
           Sign in
         </a>{" "}
-        to get started
+        to give it a try.
       </p>
-      <img
-        src="../public/ladybug.svg"
-        alt=""
-      />
+      <p className="self-center mt-4 text-md">
+        Or, view my sample sign-up form
+      </p>
     </main>
   );
 }

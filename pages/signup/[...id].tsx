@@ -152,7 +152,7 @@ export default function Admin({ schedule }: Schedule) {
   return (
     <>
       <main className="flex flex-col w-full">
-        <section className="fixed w-full flex mt-16 flex-col">
+        <section className="fixed w-full flex mt-14 flex-col">
           <div className="flex flex-row mx-auto">
             {scheduleDates.length > 1 && (
               <button
@@ -181,6 +181,17 @@ export default function Admin({ schedule }: Schedule) {
         </section>
 
         <div className="overflow-x-auto mt-36 m-auto">
+          {schedule.private ? (
+            <h3 className="mb-2 w-full mx-32 font-light">
+              [This is a private form. After you make your appointment, you will
+              not be able to see which one it is.]
+            </h3>
+          ) : (
+            <h3 className="mb-2 w-full mx-32 font-light">
+              [This is a public form. Any information in your appointment will
+              be available to anyone with this link.]
+            </h3>
+          )}
           <section className="min-w-max table border-2">
             <div className="table-header-group">
               <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
@@ -218,7 +229,9 @@ export default function Admin({ schedule }: Schedule) {
                       <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
                         -
                       </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center"></div>
+                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
+                        -
+                      </div>
                       <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
                         -
                       </div>
@@ -302,7 +315,7 @@ export default function Admin({ schedule }: Schedule) {
                       <div>
                         <button
                           className="table-cell py-2 px-4 w-40"
-                          type="button"
+                          type="submit"
                           disabled={!editMode}>
                           Book It!
                         </button>

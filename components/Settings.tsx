@@ -37,26 +37,38 @@ const SettingsComponent = ({ schedule }: Schedule) => {
   const { data: session } = useSession();
   const [showModal, setShowModal] = useState(false);
   const userId: string | undefined = session?.user?.id;
-  console.log(schedule.increments);
+
   //schedule is only brought in to set these settings.
   //Settings, not schedule is use below
-  const [settings, setSettings] = useState({
-    start_date: schedule.start_date,
-    end_date: schedule.end_date,
-    start_time: schedule.start_time,
-    end_time: schedule.end_time,
-    increments: schedule.increments,
-    max_signups: schedule.max_signups,
-    private: schedule.private,
-    requirements: schedule.requirements,
-    appointments: schedule.appointments,
-  });
+  const [settings, setSettings] = useState(
+    schedule && schedule.start_date
+      ? {
+          start_date: schedule.start_date,
+          end_date: schedule.end_date,
+          start_time: schedule.start_time,
+          end_time: schedule.end_time,
+          increments: schedule.increments,
+          max_signups: schedule.max_signups,
+          private: schedule.private,
+          requirements: schedule.requirements,
+          appointments: schedule.appointments,
+        }
+      : {
+          //defaults
+          start_date: todayString,
+          end_date: todayString,
+          start_time: "09:00",
+          end_time: "17:00",
+          increments: "30m",
+          max_signups: 1,
+          private: true,
+          requirements: 1,
+          appointments: [],
+        }
+  );
   const router = useRouter();
-  console.log(settings);
 
-  // if (!session) {
-  //   router.push("/");
-  // }
+  console.log(settings);
 
   const changeHandler = (
     event:
@@ -104,12 +116,14 @@ const SettingsComponent = ({ schedule }: Schedule) => {
           htmlFor="accordion"
           className="flex justify-between w-full px-2 border-l-4 items-center group">
           Settings
-          <button
-            className="px-4 bg-blue-500 rounded formButton"
-            type="button"
-            onClick={() => router.push(`/signup/${userId}`)}>
-            View Schedule Page
-          </button>
+          {settings.appointments.length > 0 && (
+            <button
+              className="px-4 bg-blue-500 rounded formButton"
+              type="button"
+              onClick={() => router.push(`/signup/${userId}`)}>
+              View Schedule Page
+            </button>
+          )}
         </label>
 
         <div className="hidden w-screen peer-checked:block py-4 ">
