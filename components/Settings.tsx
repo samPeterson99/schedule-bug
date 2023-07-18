@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Requirements, Appointment, Schedule } from "@/types/types";
+import { Requirements, Appointment, Schedule } from "../types/types";
 
 const SettingsComponent = ({ schedule }: Schedule) => {
   let todayDate = new Date();

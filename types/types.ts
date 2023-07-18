@@ -26,4 +26,5 @@ interface Schedule {
   };
 }
 
-export { Requirements, Appointment, Schedule };
+export { Requirements };
+export type { Appointment, Schedule };
