@@ -7,6 +7,8 @@ const AdminSchedule = ({ schedule }: Schedule) => {
     schedule.appointments.map((day) => {
       return JSON.parse(day as string);
     });
+  console.log(appointmentObjects);
+
   const scheduleDates = appointmentObjects.map((day) => {
     return day.date;
   });
