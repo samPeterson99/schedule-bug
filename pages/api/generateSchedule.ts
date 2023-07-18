@@ -2,22 +2,9 @@ import { authOptions } from "./auth/[...nextauth]";
 import { supabase } from "../../lib/supabaseClient";
 import { getServerSession } from "next-auth";
 import { NextApiRequest, NextApiResponse } from "next";
+import { Requirements, Appointment } from "@/types/types";
 
-enum Requirements {
-  both,
-  phone,
-  email,
-  neither,
-}
-
-interface Appointment {
-  time: string;
-  name: string | null;
-  phone: string | null;
-  email: string | null;
-}
-
-interface Schedule {
+interface rawSchedule {
   start_date: string;
   end_date: string;
   start_time: string;
@@ -77,7 +64,7 @@ export default async function handler(
 }
 
 function generateAppointments(
-  schedule: Schedule
+  schedule: rawSchedule
 ): { date: Date; timeslots: Appointment[] }[] {
   let appointments: { date: Date; timeslots: Appointment[] }[] = [];
   /*for each day between and including start date and end date

@@ -1,34 +1,7 @@
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-
-enum Requirements {
-  both,
-  phone,
-  email,
-  neither,
-}
-
-interface Appointment {
-  time: string;
-  name: string | null;
-  phone: string | null;
-  email: string | null;
-}
-
-interface Schedule {
-  schedule: {
-    start_date: string;
-    end_date: string;
-    start_time: string;
-    end_time: string;
-    increments: string;
-    max_signups: number;
-    private: boolean;
-    requirements: Requirements;
-    appointments: Appointment[] | string[];
-  };
-}
+import { Requirements, Appointment, Schedule } from "@/types/types";
 
 const SettingsComponent = ({ schedule }: Schedule) => {
   let todayDate = new Date();
@@ -97,7 +70,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
     const response = await fetch(endpoint, options);
 
     const result = await response.json();
-    console.log(result);
+
     router.reload();
   };
 

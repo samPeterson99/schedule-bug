@@ -1,13 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import { NextApiRequest, NextApiResponse } from "next";
 
-interface Appointment {
-  time: string;
-  name: string | null;
-  phone: string | null;
-  email: string | null;
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

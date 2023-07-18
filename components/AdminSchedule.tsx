@@ -1,33 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-
-enum Requirements {
-  both,
-  phone,
-  email,
-  neither,
-}
-
-interface Appointment {
-  time: string;
-  name: string | null;
-  phone: string | null;
-  email: string | null;
-}
-
-interface Schedule {
-  schedule: {
-    start_date: string;
-    end_date: string;
-    start_time: string;
-    end_time: string;
-    increments: string;
-    max_signups: number;
-    private: boolean;
-    requirements: Requirements;
-    appointments: Appointment[] | string[];
-  };
-}
+import { Requirements, Appointment, Schedule } from "@/types/types";
 
 const AdminSchedule = ({ schedule }: Schedule) => {
   const appointmentObjects: { date: string; timeslots: Appointment[] }[] =

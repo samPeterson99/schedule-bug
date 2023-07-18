@@ -4,34 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { NextPageContext } from "next";
 import useLocalStorage from "@/hooks/useLocalStorage";
-
-enum Requirements {
-  both,
-  phone,
-  email,
-  neither,
-}
-
-interface Appointment {
-  time: string;
-  name: string | null;
-  phone: string | null;
-  email: string | null;
-}
-
-interface Schedule {
-  schedule: {
-    start_date: string;
-    end_date: string;
-    start_time: string;
-    end_time: string;
-    increments: string;
-    max_signups: number;
-    private: boolean;
-    requirements: Requirements;
-    appointments: Appointment[] | string[];
-  };
-}
+import { Requirements, Appointment, Schedule } from "@/types/types";
 
 export default function Admin({ schedule }: Schedule) {
   //parse db's string version of appointments into JSON
