@@ -57,7 +57,7 @@ export default function Home() {
       </p>
       <a
         href="https://www.schedulebug.xyz/signup/115937405155529809584"
-        className="self-center mt-4 cursor-pointer text-md">
+        className="self-center underline mt-4 cursor-pointer text-md">
         Or, view my sample sign-up form without signing up.
       </a>
     </main>

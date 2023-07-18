@@ -62,9 +62,6 @@ export default function Admin({ schedule }: Schedule) {
     editCount === schedule.max_signups ? false : true
   );
 
-  console.log("editCount", editCount);
-  console.log("editMode", editMode);
-
   const scheduleId = router?.query?.id?.[0] ?? "";
 
   function changeDisplayDate(direction: string) {
@@ -95,8 +92,6 @@ export default function Admin({ schedule }: Schedule) {
     incrementEditCount();
 
     const info = e.target as HTMLFormElement;
-    console.log(info.userName.value);
-    console.log("appointment copy", appointmentCopy);
 
     for (const day of appointmentCopy) {
       if (day.date === displayDate) {
@@ -116,8 +111,6 @@ export default function Admin({ schedule }: Schedule) {
 
     setAppointments(appointmentCopy);
 
-    console.log("appointments", appointments);
-
     const apptJSON = JSON.stringify(appointments);
     const endpoint = `/api/bookAppointments/${scheduleId}`;
     const options = {
@@ -130,7 +123,6 @@ export default function Admin({ schedule }: Schedule) {
     const response = await fetch(endpoint, options);
 
     const result = await response.json();
-    console.log(result);
   };
 
   const incrementEditCount = () => {
@@ -347,12 +339,6 @@ export async function getServerSideProps(context: NextPageContext) {
       .from("data")
       .select()
       .eq("id", `${context.query.id[0]}`);
-
-    if (error) {
-      console.error("Error", error);
-    } else {
-      console.log("Success", data);
-    }
 
     return {
       props: { schedule: data ? data[0] : null },

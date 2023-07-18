@@ -35,13 +35,9 @@ export default async function handler(
 ) {
   const session = await getServerSession(req, res, authOptions);
 
-  console.log(req.body.appointments.length);
-
   let appointments = generateAppointments(req.body);
-  console.log("req body app", req.body.appointments);
 
   if (req.body.appointments.length === 0) {
-    console.log("create");
     const { data, error } = await supabase
       .from("data")
       .insert({
@@ -58,16 +54,8 @@ export default async function handler(
       })
       .select();
 
-    console.log(appointments);
-
     res.status(200).json(data);
-    if (error) {
-      console.error("Error", error);
-    } else {
-      console.log("Success", data);
-    }
   } else {
-    console.log("update");
     const { data, error } = await supabase
       .from("data")
       .update({
@@ -85,11 +73,6 @@ export default async function handler(
       .select();
 
     res.status(200).json(data);
-    if (error) {
-      console.error("Error", error);
-    } else {
-      console.log("Success", data);
-    }
   }
 }
 

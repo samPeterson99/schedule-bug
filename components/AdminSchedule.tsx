@@ -44,7 +44,6 @@ const AdminSchedule = ({ schedule }: Schedule) => {
   const router = useRouter();
 
   const scheduleId = router?.query?.userId?.[0] ?? "";
-  console.log(scheduleId);
 
   function changeDisplayDate(direction: string) {
     if (showModal === null) {
@@ -76,8 +75,6 @@ const AdminSchedule = ({ schedule }: Schedule) => {
 
     const info = e.target as HTMLFormElement;
     const fill = info.userName.value === "" ? "BLOCKED" : "";
-    console.log(fill);
-    console.log("appointment copy", appointmentCopy);
 
     for (const day of appointmentCopy) {
       if (day.date === displayDate) {
@@ -97,8 +94,6 @@ const AdminSchedule = ({ schedule }: Schedule) => {
 
     setAppointments(appointmentCopy);
 
-    console.log("appointments", appointments);
-
     const apptJSON = JSON.stringify(appointments);
     const endpoint = `/api/bookAppointments/${scheduleId}`;
     const options = {
@@ -111,8 +106,6 @@ const AdminSchedule = ({ schedule }: Schedule) => {
     const response = await fetch(endpoint, options);
 
     const result = await response.json();
-
-    console.log(result);
   };
 
   let displayAppointments:

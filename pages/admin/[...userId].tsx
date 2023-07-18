@@ -35,7 +35,6 @@ interface Schedule {
 }
 
 export default function Admin({ schedule }: Schedule) {
-  console.log(schedule);
   return (
     <>
       <SettingsComponent schedule={schedule} />
@@ -69,12 +68,6 @@ export async function getServerSideProps(context: NextPageContext) {
       .select()
       .eq("id", `${session?.user.id}`);
 
-    if (error) {
-      console.error("Error", error);
-    } else {
-      console.log("Success", data);
-    }
-    console.log("data", data);
     return {
       props: { schedule: data && data[0] ? data[0] : null },
     };

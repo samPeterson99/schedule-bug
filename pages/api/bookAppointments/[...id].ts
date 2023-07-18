@@ -24,9 +24,4 @@ export default async function handler(
     .select();
 
   res.status(200).json(data);
-  if (error) {
-    console.error("Error", error);
-  } else {
-    console.log("Success", data);
-  }
 }

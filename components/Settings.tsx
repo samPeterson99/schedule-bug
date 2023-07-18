@@ -68,8 +68,6 @@ const SettingsComponent = ({ schedule }: Schedule) => {
   );
   const router = useRouter();
 
-  console.log(settings);
-
   const changeHandler = (
     event:
       | React.ChangeEvent<HTMLInputElement>
@@ -77,8 +75,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
   ): void => {
     let key = event.target.name;
     let value = event.target.value;
-    console.log(key);
-    console.log(value);
+
     setSettings((prevSettings) => ({
       ...prevSettings,
       [key]: value,
@@ -87,7 +84,7 @@ const SettingsComponent = ({ schedule }: Schedule) => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(settings.start_date);
+
     const settingsJSON = JSON.stringify(settings);
     const endpoint = "/api/generateSchedule";
     const options = {
