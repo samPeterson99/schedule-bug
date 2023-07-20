@@ -26,6 +26,10 @@ export default function Admin({ schedule }: Schedule) {
   const router = useRouter();
   const [displayDate, setDisplayDate] = useState(scheduleDates[0]);
   const [appointments, setAppointments] = useState(appointmentObjects);
+  const [formDay, setFormDay] = useState<string | null>(null);
+  const [formAppointment, setFormAppointment] = useState<Appointment | null>(
+    null
+  );
   const [editCount, setEditCount] = useLocalStorage(
     "editCount",
     0,
@@ -58,44 +62,50 @@ export default function Admin({ schedule }: Schedule) {
     }
   }
 
+  function handleButton(day: string, timeslot: Appointment) {
+    setFormDay(day);
+    setFormAppointment(timeslot);
+  }
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     let appointmentCopy = [...appointments];
     e.preventDefault();
 
-    incrementEditCount();
+    // incrementEditCount();
+    if (formAppointment && formDay) {
+      const info = e.target as HTMLFormElement;
 
-    const info = e.target as HTMLFormElement;
-
-    for (const day of appointmentCopy) {
-      if (day.date === displayDate) {
-        let object = day.timeslots.find((obj, index) => {
-          if (obj.time === info.time.value) {
-            day!.timeslots[index] = {
-              time: info.time.value,
-              name: info.userName.value,
-              phone: info.phone.value,
-              email: info.email.value,
-            };
-            return true;
-          }
-        });
+      for (const day of appointmentCopy) {
+        if (day.date === displayDate) {
+          let object = day.timeslots.find((obj, index) => {
+            if (obj.time === info.time.value) {
+              day!.timeslots[index] = {
+                time: info.time.value,
+                name: info.userName.value,
+                phone: info.phone.value,
+                email: info.email.value,
+              };
+              return true;
+            }
+          });
+        }
       }
+
+      setAppointments(appointmentCopy);
+
+      const apptJSON = JSON.stringify(appointments);
+      const endpoint = `/api/bookAppointments/${scheduleId}`;
+      const options = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: apptJSON,
+      };
+      const response = await fetch(endpoint, options);
+
+      const result = await response.json();
     }
-
-    setAppointments(appointmentCopy);
-
-    const apptJSON = JSON.stringify(appointments);
-    const endpoint = `/api/bookAppointments/${scheduleId}`;
-    const options = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: apptJSON,
-    };
-    const response = await fetch(endpoint, options);
-
-    const result = await response.json();
   };
 
   const incrementEditCount = () => {
@@ -145,33 +155,15 @@ export default function Admin({ schedule }: Schedule) {
           </div>
         </section>
 
-        <div className="overflow-x-auto mt-36 m-auto">
-          {schedule.private ? (
-            <h3 className="mb-2 w-full mx-32 font-light">
-              [This is a private form. After you make your appointment, you will
-              not be able to see which one it is.]
-            </h3>
-          ) : (
-            <h3 className="mb-2 w-full mx-32 font-light">
-              [This is a public form. Any information in your appointment will
-              be available to anyone with this link.]
-            </h3>
-          )}
-          <section className="min-w-max table border-2">
+        <div className="overflow-x-auto w-full flex flex-row gap-4 mt-36 m-auto">
+          <section className="w-1/2 table border-2">
             <div className="table-header-group">
               <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
                 Time
               </div>
-              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
+              <div className="table-cell py-2 px-4 w-40 border-b-2 text-center">
                 Name
               </div>
-              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
-                Phone
-              </div>
-              <div className="table-cell py-2 px-4 w-40 border-r-2  border-b-2 text-center">
-                Email
-              </div>
-              <div className="table-cell py-2 px-4 w-24  border-b-2"></div>
             </div>
             <div className="table-row-group overflow-auto">
               {displayAppointments?.timeslots.map((timeslot, index) => {
@@ -188,18 +180,7 @@ export default function Admin({ schedule }: Schedule) {
                           readOnly
                         />
                       </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
-                        Reserved
-                      </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
-                        -
-                      </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
-                        -
-                      </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
-                        -
-                      </div>
+                      <div className="table-cell py-2 px-4 w-40">Reserved</div>
                     </div>
                   );
                 } else if (timeslot.name && !schedule.private) {
@@ -215,29 +196,22 @@ export default function Admin({ schedule }: Schedule) {
                           readOnly
                         />
                       </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2">
+                      <div className="table-cell py-2 px-4 w-40">
                         {timeslot.name === "BLOCKED" ? (
                           <div>Not Available</div>
                         ) : (
                           <div>Reserved: {timeslot.name}</div>
                         )}
                       </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
-                        -
-                      </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2 text-center">
-                        -
-                      </div>
-                      <div className="table-cell py-2 px-4 w-40 text-center">
-                        -
-                      </div>
                     </div>
                   );
-                } else {
+                } else if (
+                  displayDate === formDay &&
+                  timeslot.time === formAppointment?.time
+                ) {
                   return (
                     <form
                       className="table-row"
-                      onSubmit={onSubmit}
                       key={index}>
                       <div className="table-cell py-2 px-4 w-40 border-r-2">
                         <input
@@ -247,49 +221,125 @@ export default function Admin({ schedule }: Schedule) {
                           readOnly
                         />
                       </div>
+                      <button
+                        type="button"
+                        disabled={!editMode}
+                        className="table-cell py-2 w-full h-8  bg-white"
+                        onClick={() =>
+                          handleButton(displayDate, timeslot)
+                        }></button>
+                    </form>
+                  );
+                } else {
+                  return (
+                    <form
+                      className="table-row"
+                      key={index}>
                       <div className="table-cell py-2 px-4 w-40 border-r-2">
                         <input
-                          type="text"
-                          name="userName"
-                          readOnly={!editMode}
-                          required
+                          type="time"
+                          name="time"
+                          value={timeslot.time}
+                          readOnly
                         />
                       </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2">
-                        <input
-                          type="tel"
-                          name="phone"
-                          readOnly={!editMode}
-                          required={
-                            schedule.requirements === Requirements.both ||
-                            schedule.requirements === Requirements.phone
-                          }
-                        />
-                      </div>
-                      <div className="table-cell py-2 px-4 w-40 border-r-2">
-                        <input
-                          type="email"
-                          name="email"
-                          readOnly={!editMode}
-                          required={
-                            schedule.requirements === Requirements.both ||
-                            schedule.requirements === Requirements.email
-                          }
-                        />
-                      </div>
-                      <div>
-                        <button
-                          className="table-cell py-2 px-4 w-40"
-                          type="submit"
-                          disabled={!editMode}>
-                          Book It!
-                        </button>
-                      </div>
+
+                      <button
+                        type="button"
+                        disabled={!editMode}
+                        className="table-cell py-2 w-full h-8 "
+                        onClick={() =>
+                          handleButton(displayDate, timeslot)
+                        }></button>
                     </form>
                   );
                 }
               })}
             </div>
+          </section>
+          <section className="border-2 w-1/2">
+            {!editMode ? (
+              <h1>out of edits</h1>
+            ) : formDay !== null && formAppointment !== null ? (
+              <form
+                className="flex flex-col h-full justify-between"
+                onSubmit={onSubmit}>
+                <div className="flex flex-col">
+                  <h3 className=" text-xs border-b-2 p-2 w-full justify-self-start">
+                    Book an appointment{" "}
+                    <b className="bg-white p-px text-black">
+                      {new Date(formDay as string).toDateString()}
+                    </b>{" "}
+                    at
+                    <input
+                      type="time"
+                      name="time"
+                      className="bg-white ml-1 font-bold p-px text-black"
+                      value={formAppointment.time as string}
+                      readOnly
+                    />
+                  </h3>
+
+                  <label
+                    htmlFor="userName"
+                    className="pl-4">
+                    Name:
+                    <input
+                      type="text"
+                      name="userName"
+                      className="ml-2 p-2 mt-4 bg-white text-black"
+                      readOnly={!editMode}
+                      required
+                    />
+                  </label>
+                  <label
+                    htmlFor="phone"
+                    className="pl-4">
+                    Phone Number:
+                    <input
+                      type="tel"
+                      name="phone"
+                      readOnly={!editMode}
+                      className="ml-2 mt-4 p-2 bg-white text-black"
+                      required={
+                        schedule.requirements === Requirements.both ||
+                        schedule.requirements === Requirements.phone
+                      }
+                    />
+                  </label>
+                  <label
+                    htmlFor="email"
+                    className="pl-4">
+                    Email:
+                    <input
+                      type="email"
+                      name="email"
+                      className="ml-2 mt-4 p-2 bg-white text-black"
+                      readOnly={!editMode}
+                      required={
+                        schedule.requirements === Requirements.both ||
+                        schedule.requirements === Requirements.email
+                      }
+                    />
+                  </label>
+                </div>
+
+                <div className="justify-self-end">
+                  <p className="px-2 text-xs font-light">
+                    Take note of your appointment before you book it. Depending
+                    on settings, the schedule might not say your name.
+                  </p>
+                  <button
+                    className="w-full py-2 px-4 border-2"
+                    type="submit"
+                    disabled={!editMode}>
+                    Book It!
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <h1>nohting doin</h1>
+            )}
           </section>
         </div>
       </main>
