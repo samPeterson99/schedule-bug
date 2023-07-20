@@ -71,7 +71,7 @@ export default function Admin({ schedule }: Schedule) {
     let appointmentCopy = [...appointments];
     e.preventDefault();
 
-    // incrementEditCount();
+    incrementEditCount();
     if (formAppointment && formDay) {
       const info = e.target as HTMLFormElement;
 
@@ -162,7 +162,7 @@ export default function Admin({ schedule }: Schedule) {
                 Time
               </div>
               <div className="table-cell py-2 px-4 w-40 border-b-2 text-center">
-                Name
+                Selection
               </div>
             </div>
             <div className="table-row-group overflow-auto">
@@ -338,7 +338,9 @@ export default function Admin({ schedule }: Schedule) {
                 </div>
               </form>
             ) : (
-              <h1>nohting doin</h1>
+              <h5 className="w-full text-center mt-8">
+                Select a Time for Sign up
+              </h5>
             )}
           </section>
         </div>
