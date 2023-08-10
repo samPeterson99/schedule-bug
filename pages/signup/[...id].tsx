@@ -1,28 +1,34 @@
-import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { NextPageContext } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { Requirements, Appointment, Schedule } from "@/types/types";
+import { Requirements, Appointment, filteredSchedule } from "@/types/types";
 
-export default function Admin({ schedule }: Schedule) {
+export default function SignUp({ schedule }: filteredSchedule) {
   //parse db's string version of appointments into JSON
-  const appointmentObjects: { date: string; timeslots: Appointment[] }[] =
-    schedule.appointments.map((day) => {
-      return JSON.parse(day as string);
-    });
+
+  const appointmentObjects = schedule.appointments;
 
   console.log(typeof window === "undefined" ? "server side" : "client side");
 
-  useEffect(() => {
-    console.log("Effect running...");
-    // Rest of the effect's code
-  }, []);
+  function stringToTime(string: String): String {
+    let array = string.split(":");
+    let hour = parseInt(array[0]);
+
+    if (hour > 12) {
+      hour -= 12;
+      array[0] = hour.toString();
+      return array[0] + ":" + array[1] + " PM";
+    } else {
+      array.push("AM");
+      return array[0] + ":" + array[1] + " AM";
+    }
+  }
 
   //create an array of every date for schedule
   //switch to Object.keys(appointmentObjects)
-  const scheduleDates = appointmentObjects.map((day) => {
+  const scheduleDates = appointmentObjects.map((day: any) => {
     return day.date;
   });
 
@@ -88,6 +94,7 @@ export default function Admin({ schedule }: Schedule) {
             if (obj.time === info.time.value) {
               day!.timeslots[index] = {
                 time: info.time.value,
+                available: false,
                 name: info.userName.value,
                 phone: info.phone.value,
                 email: info.email.value,
@@ -174,7 +181,7 @@ export default function Admin({ schedule }: Schedule) {
             </div>
             <div className="table-row-group overflow-auto">
               {displayAppointments?.timeslots.map((timeslot, index) => {
-                if (timeslot.name && schedule.private) {
+                if (!timeslot.available && schedule.private) {
                   return (
                     <div
                       className="table-row"
@@ -190,7 +197,7 @@ export default function Admin({ schedule }: Schedule) {
                       <div className="table-cell py-2 px-4 w-40">Reserved</div>
                     </div>
                   );
-                } else if (timeslot.name && !schedule.private) {
+                } else if (!timeslot.available && !schedule.private) {
                   return (
                     <div
                       className="table-row"
@@ -203,13 +210,7 @@ export default function Admin({ schedule }: Schedule) {
                           readOnly
                         />
                       </div>
-                      <div className="table-cell py-2 px-4 w-40">
-                        {timeslot.name === "BLOCKED" ? (
-                          <div>Not Available</div>
-                        ) : (
-                          <div>Reserved: {timeslot.name}</div>
-                        )}
-                      </div>
+                      <div className="table-cell py-2 px-4 w-40">Reserved</div>
                     </div>
                   );
                 } else if (
@@ -277,14 +278,7 @@ export default function Admin({ schedule }: Schedule) {
                     <b className="bg-white p-px text-black">
                       {new Date(formDay as string).toDateString()}
                     </b>{" "}
-                    at
-                    <input
-                      type="time"
-                      name="time"
-                      className="bg-white ml-1 font-bold p-px text-black"
-                      value={formAppointment.time as string}
-                      readOnly
-                    />
+                    at {stringToTime(formAppointment.time)}
                   </h3>
 
                   <label
@@ -356,7 +350,9 @@ export default function Admin({ schedule }: Schedule) {
   );
 }
 
-export async function getServerSideProps(context: NextPageContext) {
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
   if (!context.query.id) {
     return {
       redirect: {
@@ -372,10 +368,31 @@ export async function getServerSideProps(context: NextPageContext) {
       .select()
       .eq("id", `${context.query.id[0]}`);
 
+    let filteredData: { date: string; timeslots: Appointment[] }[] = [];
+    if (data) {
+      filteredData = data[0].appointments.map((day: string) => {
+        let jsonData = JSON.parse(day as string);
+        const filteredTimeslots = jsonData.timeslots.map(
+          (timeslot: { time: any; available: any }) => ({
+            time: timeslot.time,
+            available: timeslot.available,
+          })
+        );
+        return {
+          date: jsonData.date,
+          timeslots: filteredTimeslots,
+        };
+      });
+    }
+
     return {
-      props: { schedule: data ? data[0] : null },
+      props: {
+        schedule: data ? { ...data[0], appointments: filteredData } : null,
+      },
     };
   } catch (error) {
-    console.error(error);
+    return {
+      props: { schedule: null },
+    };
   }
-}
+};

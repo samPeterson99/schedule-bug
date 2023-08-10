@@ -138,6 +138,7 @@ function generateTimeslots(startTime: string, endTime: string, i: string) {
     // Add the current time to the intervals array
     timeslots.push({
       time: formatTime(currentTime.getHours(), currentTime.getMinutes()),
+      available: true,
       name: null,
       phone: null,
       email: null,

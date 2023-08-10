@@ -59,6 +59,7 @@ const AdminSchedule = ({ schedule }: Schedule) => {
               name: fill,
               phone: fill,
               email: fill,
+              available: false,
             };
             return true;
           }
