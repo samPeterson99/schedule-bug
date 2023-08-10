@@ -15,6 +15,11 @@ export default function Admin({ schedule }: Schedule) {
 
   console.log(typeof window === "undefined" ? "server side" : "client side");
 
+  useEffect(() => {
+    console.log("Effect running...");
+    // Rest of the effect's code
+  }, []);
+
   //create an array of every date for schedule
   //switch to Object.keys(appointmentObjects)
   const scheduleDates = appointmentObjects.map((day) => {
