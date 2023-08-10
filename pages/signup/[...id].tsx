@@ -327,8 +327,8 @@ export default function SignUp({ schedule }: filteredSchedule) {
 
                 <div className="justify-self-end">
                   <p className="px-2 text-xs font-light">
-                    Take note of your appointment before you book it. Depending
-                    on settings, the schedule might not say your name.
+                    Take note of your appointment before you book it. The
+                    schedule on the left will not show your name.
                   </p>
                   <button
                     className="w-full py-2 px-4 border-2"
