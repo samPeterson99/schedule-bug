@@ -13,6 +13,8 @@ export default function Admin({ schedule }: Schedule) {
       return JSON.parse(day as string);
     });
 
+  console.log(typeof window === "undefined" ? "server side" : "client side");
+
   //create an array of every date for schedule
   //switch to Object.keys(appointmentObjects)
   const scheduleDates = appointmentObjects.map((day) => {
